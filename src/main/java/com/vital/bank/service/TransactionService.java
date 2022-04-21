@@ -5,8 +5,8 @@ import com.vital.bank.database.entity.Transaction;
 import com.vital.bank.database.entity.TransactionType;
 import com.vital.bank.database.repository.BankAccountRepository;
 import com.vital.bank.database.repository.TransactionRepository;
-import com.vital.bank.dto.FundsTransferRequest;
-import com.vital.bank.dto.FundsTransferResponse;
+import com.vital.bank.dto.FundsTransferRequestDto;
+import com.vital.bank.dto.FundsTransferResponseDto;
 import com.vital.bank.exception.EntityNotFoundException;
 import com.vital.bank.exception.InsufficientFundsException;
 import lombok.RequiredArgsConstructor;
@@ -24,26 +24,26 @@ public class TransactionService {
     private final BankAccountRepository bankAccountRepository;
     private final TransactionRepository transactionRepository;
 
-    public FundsTransferResponse fundsTransfer(FundsTransferRequest fundsTransferRequest) {
+    public FundsTransferResponseDto fundsTransfer(FundsTransferRequestDto fundsTransferRequestDto) {
         var transactionId = UUID.randomUUID().toString();
 
-        var fromBankAccount = bankAccountRepository.findByNumber(fundsTransferRequest.fromAccount())
+        var fromBankAccount = bankAccountRepository.findByNumber(fundsTransferRequestDto.fromAccount())
                 .orElseThrow(EntityNotFoundException::new);
-        var toBankAccount = bankAccountRepository.findByNumber(fundsTransferRequest.toAccount())
+        var toBankAccount = bankAccountRepository.findByNumber(fundsTransferRequestDto.toAccount())
                 .orElseThrow(EntityNotFoundException::new);
 
-        validateBalance(fromBankAccount, fundsTransferRequest.amount());
+        validateBalance(fromBankAccount, fundsTransferRequestDto.amount());
 
-        fromBankAccount.setBalance(fromBankAccount.getBalance().subtract(fundsTransferRequest.amount()));
-        toBankAccount.setBalance(toBankAccount.getBalance().add(fundsTransferRequest.amount()));
+        fromBankAccount.setBalance(fromBankAccount.getBalance().subtract(fundsTransferRequestDto.amount()));
+        toBankAccount.setBalance(toBankAccount.getBalance().add(fundsTransferRequestDto.amount()));
 
         transactionRepository.save(Transaction.builder().transactionType(TransactionType.FUNDS_TRANSFER)
                 .toAccountNumber(toBankAccount.getNumber())
                 .transactionId(transactionId)
                 .bankAccount(fromBankAccount)
-                .amount(fundsTransferRequest.amount()).build());
+                .amount(fundsTransferRequestDto.amount()).build());
 
-        return FundsTransferResponse.builder()
+        return FundsTransferResponseDto.builder()
                 .message("Payment to account:%s was successfully processed".formatted(toBankAccount.getNumber()))
                 .transactionId(transactionId).build();
     }

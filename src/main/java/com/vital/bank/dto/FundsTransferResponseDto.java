@@ -5,7 +5,7 @@ import lombok.Value;
 
 @Value
 @Builder
-public class FundsTransferResponse {
+public class FundsTransferResponseDto {
 
     String message;
     String transactionId;

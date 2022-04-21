@@ -48,7 +48,3 @@ compileQuerydsl {
 test {
     useJUnitPlatform()
 }
-
-wrapper {
-    gradleVersion '7.3'
-}
