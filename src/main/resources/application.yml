@@ -3,7 +3,6 @@ spring:
     url: jdbc:postgresql://localhost:5431/bank
     username: postgres
     password: pass
-    driver-class-name: org.postgresql.Driver
   jpa:
     properties.hibernate:
       fetch_size: 50
